@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+
+# Xcode build files
+build/
+DerivedData/
+*.xcuserstate
+
+# Xcode personal settings
+xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+
+# Archives
+*.xcarchives
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Fastlane reports
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/text_output/
+
+# Secrets (if added in future)
+.env
+.env.*
+!*.env.example
+Secrets.xcconfig
