@@ -105,7 +105,7 @@ struct SettingsView: View{
                 Section("About") {
                     LabeledContent(
                         "Version",
-                        value: "0.5.0"
+                        value: "0.5.2"
                     )
                     LabeledContent(
                         "Colors",

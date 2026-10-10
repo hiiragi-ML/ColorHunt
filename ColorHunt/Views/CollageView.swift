@@ -17,6 +17,10 @@ struct CollageView: View {
     @State private var errorMessage: String?
     @State private var successMessage: String?
     
+    @State private var variation = 0
+    
+    @State private var showEditor = false
+    
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
@@ -69,9 +73,11 @@ struct CollageView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onChange(of: selectedColorID) {_, _ in
                 selectedPhotoIDs.removeAll()
+                variation = 0
                 previewImage = nil
             }
             .onChange(of: layout) { _, _ in
+                variation = 0
                 previewImage = nil
             }
             .onChange(of: photos.map(\.id)) { _, ids in
@@ -84,6 +90,13 @@ struct CollageView: View {
                 if let previewImage {
                     ShareSheet(image: previewImage)
                 }
+            }
+            .sheet(isPresented: $showEditor) {
+                CollageEditorView(
+                    images: selectedImages,
+                    layout: layout,
+                    variation: variation
+                )
             }
             .alert(
                 "エラー",
@@ -270,7 +283,7 @@ struct CollageView: View {
             .pickerStyle(.segmented)
             
             Text(
-                layout == .square ? "1080 x 1080 px" : "1080 x 1920 px"
+                "\(Int(layout.size.width)) × \(Int(layout.size.height)) px"
             )
             .font(.caption)
             .foregroundStyle(.secondary)
@@ -283,8 +296,17 @@ struct CollageView: View {
         image: UIImage
     ) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Preview")
-                .font(.title3.bold())
+            
+            HStack{
+                Text("Preview")
+                    .font(.title3.bold())
+                
+                Spacer()
+                
+                Text("Variation \(variation + 1)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
             
             Image(uiImage: image)
                 .resizable()
@@ -293,6 +315,32 @@ struct CollageView: View {
                 .clipShape(
                     RoundedRectangle(cornerRadius: 12)
                 )
+            
+            Button {
+                shuffleCollage()
+            } label: {
+                Label(
+                    "Shuffle Layout",
+                    systemImage: "shuffle"
+                )
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .disabled(isSaving)
+            
+            Button {
+                showEditor = true
+            } label: {
+                Label(
+                    "Edit Collage",
+                    systemImage: "slider.horizontal.3"
+                )
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .disabled(isSaving)
+            
+            Divider()
             
             Button {
                 Task {
@@ -346,12 +394,30 @@ struct CollageView: View {
         guard selectedImages.count == selectedPhotoIDs.count,
               let image = CollageRenderer.render(
                 images: selectedImages,
-                layout: layout
+                layout: layout,
+                variation: variation
               ) else {
             errorMessage = "コラージュを生成できませんでした。"
             return
         }
         previewImage = image
+    }
+    
+    private func shuffleCollage() {
+        variation += 1
+        generateCollage()
+    }
+    
+    private var selectedImages: [UIImage] {
+        selectedPhotoIDs.compactMap { id in
+            guard let photo = photos.first(
+                where: { $0.id == id }
+            ) else {
+                return nil
+            }
+            
+            return PhotoStore.load(photo.fileName)
+        }
     }
     
     // MARK: - Save
