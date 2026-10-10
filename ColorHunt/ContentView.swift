@@ -16,7 +16,7 @@ struct ContentView: View {
                 .tabItem{
                     Label("Album", systemImage: "square.grid.2x2")
                 }
-            CreateView()
+            CollageView()
                 .tabItem{
                     Label("Create", systemImage: "paintpalette")
                 }
@@ -26,19 +26,6 @@ struct ContentView: View {
                 }
         }
         .tint(.primary)
-    }
-}
-
-struct CreateView: View{
-    var body: some View{
-        NavigationStack{
-            ContentUnavailableView(
-                "Create",
-                systemImage: "paintpalette",
-                description: Text("コラージュとモザイクアートは今後追加予定です。")
-            )
-            .navigationTitle("Create")
-        }
     }
 }
 
@@ -118,7 +105,7 @@ struct SettingsView: View{
                 Section("About") {
                     LabeledContent(
                         "Version",
-                        value: "0.3.0"
+                        value: "0.5.0"
                     )
                     LabeledContent(
                         "Colors",
