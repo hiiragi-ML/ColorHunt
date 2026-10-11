@@ -30,6 +30,8 @@ struct CollageDraft {
 }
 
 enum CollageRenderer {
+    static let templateCount = 20
+    
     private static let margin: CGFloat = 24
     private static let spacing: CGFloat = 10
     
@@ -47,7 +49,7 @@ enum CollageRenderer {
         layout: CollageLayout,
         variation: Int = 0
     ) -> CollageDraft {
-        let arrangements = (0..<20).map { index in
+        let arrangements = (0..<templateCount).map { index in
             let template = CollageTemplateFactory.make(
                 photoCount: images.count,
                 variation: index
@@ -296,5 +298,23 @@ enum CollageRenderer {
         image.draw(in: drawRect)
         
         context.restoreGState()
+    }
+    
+    static func template(
+        for images: [UIImage],
+        layout: CollageLayout,
+        variation: Int
+    ) -> CollageTemplate? {
+        guard(2...9).contains(images.count) else {
+            return nil
+        }
+        
+        let draft = makeDraft(
+            images: images,
+            layout: layout,
+            variation: variation
+        )
+        
+        return draft.template
     }
 }

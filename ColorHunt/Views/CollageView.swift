@@ -14,12 +14,12 @@ struct CollageView: View {
     
     @State private var isSaving = false
     @State private var showShareSheet = false
+    @State private var showEditor = false
+    @State private var showTemplateLibrary = false
     @State private var errorMessage: String?
     @State private var successMessage: String?
     
     @State private var variation = 0
-    
-    @State private var showEditor = false
     
     private let columns = [
         GridItem(.flexible()),
@@ -97,6 +97,16 @@ struct CollageView: View {
                     layout: layout,
                     variation: variation
                 )
+            }
+            .sheet(isPresented: $showTemplateLibrary) {
+                TemplateLibraryView(
+                    images: selectedImages,
+                    layout: layout,
+                    selectedVariation: variation
+                ) { selectedIndex in
+                    variation = selectedIndex
+                    generateCollage()
+                }
             }
             .alert(
                 "エラー",
@@ -322,6 +332,18 @@ struct CollageView: View {
                 Label(
                     "Shuffle Layout",
                     systemImage: "shuffle"
+                )
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .disabled(isSaving)
+            
+            Button {
+                showTemplateLibrary = true
+            } label: {
+                Label(
+                    "Choose Template",
+                    systemImage: "rectangle.grid.2x2"
                 )
                 .frame(maxWidth: .infinity)
             }
